@@ -1,6 +1,5 @@
 import requests
 from typing import Any
-from config import employers
 
 
 # params = {"text": "IT", "page": 1, "per_page": 70, "only_with_vacancies": True}
@@ -10,39 +9,52 @@ from config import employers
 # employers = []
 # for res in json_response:
 #     if res["open_vacancies"] > 4:
-#         # print(res)
 #         count_ += 1
-#         employers.append({"id": res["id"]})
-# print(count_)
+#         employers.append(res)
 # print(employers)
-# for employer in employers:
-#     params = {"employer_id": employer["id"]}
-#     response_vac = requests.get("https://api.hh.ru/vacancies", params)
-#     js_response = response_vac.json()["items"]
-# print(js_response)
+emp_id  = ['5591530', '3147167', '11181389', '3655078', '733972', '3669216', '11321953', '10438633', '3407499', '5046934', '4568254', '217918', '1062788', '9593424', '2910384']
+# for id in emp_id:
+#     response = requests.get(f"https://api.hh.ru/employers/{id}")
+#     data = response.json()
+#     print(data)
 
-# print(json_response)
-# for vacancy in json_response:
-#     print(vacancy["employer"])
-# def get_employers():
-#     params = {"text": "IT", "page": 1, "per_page": 50, "only_with_vacancies": True}
-#     response = requests.get("https://api.hh.ru/employers", params)
-#     json_response = response.json()["items"]
-#     return json_response
+def get_employers(employer_ids):
+    result_list = []
+    for employer_id in employer_ids:
+        response = requests.get(f"https://api.hh.ru/employers/{employer_id}")
+        data = response.json()
+        result_list.append(data)
+    return result_list
 
+# print(get_employers(emp_id))
 
-
-# print(get_employers())
-#
-def get_vacancies(employer_list: list[dict[str, Any]]):
+def get_vacancies(employer_ids):
     vacancies_list = []
-    for employer in employer_list:
-        params = {"employer_id": employer["id"]}
-        response = requests.get("https://api.hh.ru/vacancies", params)
-        json_response = response.json()["items"]
-        vacancies_list.extend(json_response)
+    for employer_id in employer_ids:
+        page = 0
+        while True:
+            params = {"employer_id": employer_id, "per_page": 100, "page": page}
+            response = requests.get("https://api.hh.ru/vacancies", params=params)
+            json_response = response.json()
+            vacancies_list.extend(json_response["items"])
+            if page >= json_response["pages"] - 1:
+                break
+
+            page += 1
     return vacancies_list
 
-vacancies = get_vacancies(employers)
-for vac in vacancies:
-    print({"vac_id": vac["id"], "emp_id": vac["employer"]["id"]})
+print(get_vacancies(emp_id))
+    # print(json_response)
+# vacancies = get_vacancies(['5591530', '3147167', '11181389', '3655078', '733972', '3669216', '11321953', '10438633', '3407499', '5046934', '4568254', '217918', '1062788', '9593424', '2368']
+
+# vacancies = get_vacancies(["2368"])
+# num = 0
+# for vacancy in vacancies:
+#     num += 1
+# print(num)
+# num_ = 0
+# employers_list = ['5591530', '3147167', '11181389', '3655078', '733972', '3669216', '11321953', '10438633', '3407499', '5046934', '4568254', '217918', '1062788', '9593424', '2368']
+# employers = get_employers(['5591530', '3147167', '11181389', '3655078', '733972', '3669216', '11321953', '10438633', '3407499', '5046934', '4568254', '217918', '1062788', '9593424', '2368'])
+# for employer in employers:
+#     num_ += employer["open_vacancies"]
+# print(num_)

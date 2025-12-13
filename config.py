@@ -1,1 +1,18 @@
-employers = [{'id': '5591530'}, {'id': '3147167'}, {'id': '11181389'}, {'id': '10993144'}, {'id': '3655078'}, {'id': '733972'}, {'id': '3669216'}, {'id': '11321953'}, {'id': '10438633'}, {'id': '3407499'}, {'id': '5046934'}, {'id': '4568254'}, {'id': '217918'}, {'id': '1062788'}, {'id': '9593424'}, {'id': '2368'}]
+from configparser import ConfigParser
+
+
+def config(filename="database.ini", section="postgresql"):
+    # create a parser
+    parser = ConfigParser()
+    # read config file
+    parser.read(filename)
+    db = {}
+    if parser.has_section(section):
+        params = parser.items(section)
+        for param in params:
+            db[param[0]] = param[1]
+    else:
+        raise Exception(
+            'Section {0} is not found in the {1} file.'.format(section, filename))
+    return db
+
