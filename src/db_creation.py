@@ -3,6 +3,8 @@ from typing import Any
 
 
 def create_database(database_name: str, params: dict) -> None:
+    """Создание БД и таблиц"""
+
     conn = psycopg2.connect(dbname="postgres", **params)
     conn.autocommit = True
     with conn.cursor() as cur:
@@ -45,8 +47,9 @@ def create_database(database_name: str, params: dict) -> None:
 def save_to_database(
     data: list[dict[str, Any]], database_name: str, params: dict
 ) -> None:
-    conn = psycopg2.connect(dbname=database_name, **params)
+    """Заполнение таблиц БД данными"""
 
+    conn = psycopg2.connect(dbname=database_name, **params)
     with conn.cursor() as cur:
         for employer in data:
             employer_data = employer["employer"]
