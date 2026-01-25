@@ -1,8 +1,7 @@
-from src.hh_api import get_data
-from src.db_creation import create_database, save_to_database
 from config import config
+from src.db_creation import save_to_database, setup_database
 from src.db_manager import DBManager
-
+from src.hh_api import get_data
 
 employer_ids = [
     "5591530",
@@ -24,7 +23,7 @@ employer_ids = [
 def main():
     params = config()
     data = get_data(employer_ids)
-    create_database("hh_ru", params)
+    setup_database("hh_ru", params)
     save_to_database(data, "hh_ru", params)
     db_manager = DBManager()
 

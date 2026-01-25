@@ -1,6 +1,9 @@
+import textwrap
 from typing import Any
-from config import config
+
 import psycopg2
+
+from config import config
 
 
 class DBManager:
@@ -15,18 +18,19 @@ class DBManager:
 
         conn = psycopg2.connect(dbname=self.database_name, **self.params)
         with conn.cursor() as cur:
-            cur.execute(
-                """SELECT employers.name, COUNT(vacancy_id) AS vacancies_count
-                            FROM employers
-                            JOIN vacancies USING(employer_id)
-                            GROUP BY employer_id, employers.name
-                            """
-            )
+            cur.execute(textwrap.dedent(
+                """
+    SELECT employers.name, COUNT(vacancy_id) AS vacancies_count
+    FROM employers
+    JOIN vacancies USING(employer_id)
+    GROUP BY employer_id, employers.name
+    """
+            ))
             rows = cur.fetchall()
 
         response = []
         for row in rows:
-            response.append({"company": row[0], "vacancies": row[1]})
+            response.append({"company": row[0], "vacancies_amount": row[1]})
         conn.commit()
         conn.close()
         return response
@@ -95,7 +99,5 @@ class DBManager:
         conn.close()
         return rows
 
-
-if __name__ == "__main__":
-    manager = DBManager()
-    print(manager.get_vacancies_with_keyword("python"))
+manager = DBManager()
+print(manager.get_companies_and_vacancies_count())
