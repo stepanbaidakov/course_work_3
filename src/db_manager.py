@@ -65,7 +65,7 @@ class DBManager:
 
         conn.commit()
         conn.close()
-        return rows
+        return round(rows)
 
     def get_vacancies_with_higher_salary(self) -> list[tuple[Any, ...]]:
         """Получает список всех вакансий, у которых зарплата выше средней по всем вакансиям"""
@@ -100,4 +100,4 @@ class DBManager:
         return rows
 
 manager = DBManager()
-print(manager.get_companies_and_vacancies_count())
+print(manager.get_avg_salary())

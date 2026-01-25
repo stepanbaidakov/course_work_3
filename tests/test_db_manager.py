@@ -1409,7 +1409,7 @@ def test_get_avg_salary(mock_connect):
     mock_cur = MagicMock()
     mock_conn.cursor.return_value.__enter__.return_value = mock_cur
     mock_connect.return_value = mock_conn
-    expected_db_response = 78065.302325581395
+    expected_db_response = 78065
     mock_cur.fetchone.return_value = (expected_db_response,)
     actual_response = DB_MANAGER.get_avg_salary()
     expected_sql = """SELECT AVG(salary) AS avg_salary
