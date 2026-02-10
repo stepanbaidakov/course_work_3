@@ -1,8 +1,11 @@
-import psycopg2
 from typing import Any
 
+import psycopg2
 
-def create_database(database_name: str, params: dict) -> None:
+
+def setup_database(database_name: str, params: dict) -> None:
+    """Создание БД и таблиц"""
+
     conn = psycopg2.connect(dbname="postgres", **params)
     conn.autocommit = True
     with conn.cursor() as cur:
@@ -45,8 +48,9 @@ def create_database(database_name: str, params: dict) -> None:
 def save_to_database(
     data: list[dict[str, Any]], database_name: str, params: dict
 ) -> None:
-    conn = psycopg2.connect(dbname=database_name, **params)
+    """Заполнение таблиц БД данными"""
 
+    conn = psycopg2.connect(dbname=database_name, **params)
     with conn.cursor() as cur:
         for employer in data:
             employer_data = employer["employer"]
@@ -87,7 +91,7 @@ def save_to_database(
                 elif vacancy["salary"]["to"] is None:
                     cur.execute(
                         """INSERT INTO vacancies (vacancy_id, employer_id, name, salary, url)
-                                                        VALUES (%s, %s, %s, %s, %s)""",
+                                    VALUES (%s, %s, %s, %s, %s)""",
                         (
                             vacancy["id"],
                             employer_id,
@@ -102,7 +106,7 @@ def save_to_database(
                     )
                     cur.execute(
                         """INSERT INTO vacancies (vacancy_id, employer_id, name, salary, url)
-                                                                            VALUES (%s, %s, %s, %s, %s)""",
+                                    VALUES (%s, %s, %s, %s, %s)""",
                         (
                             vacancy["id"],
                             employer_id,

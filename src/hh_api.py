@@ -1,47 +1,35 @@
-import requests
 from typing import Any
+
+import requests
 
 
 def get_data(employer_ids: list[str]) -> list[dict[str, Any]]:
-    data = []
+    """Получает список словарей с вакансиями для каждого работодателя"""
 
+    data = []
     for employer_id in employer_ids:
         page = 0
-        employer_data = requests.get(
-            f"https://api.hh.ru/employers/{employer_id}"
-        ).json()
+        employer_data = requests.get(f"https://api.hh.ru/employers/{employer_id}")
+        employer_data_json = employer_data.json()
+        employer_data.raise_for_status()
         vacancies_data = []
         while True:
             params = {"employer_id": employer_id, "per_page": 100, "page": page}
-            vacancies_json = requests.get(
+            vacancies_response = requests.get(
                 "https://api.hh.ru/vacancies", params=params
-            ).json()
+            )
+            vacancies_response.raise_for_status()
+            vacancies_json = vacancies_response.json()
             vacancies_data.extend(vacancies_json["items"])
-            page += 1
-            if page <= vacancies_json.get("pages"):
-                break
 
-        data.append({"employer": employer_data, "vacancies": vacancies_data})
+            if page >= vacancies_json.get("pages") - 1:
+                break
+            page += 1
+        data.append({"employer": employer_data_json, "vacancies": vacancies_data})
     return data
 
-
-if __name__ == "__main__":
-    emp = [
-        "5591530",
-        "3147167",
-        "11181389",
-        "3655078",
-        "3669216",
-        "3407499",
-        "5046934",
-        "217918",
-        "1062788",
-        "2910384",
-        "18071",
-        "2235",
-        "1852940",
-    ]
-
+    # emp = ['1005196', '3147167']
+    # print(get_data(emp))
     # emp_list = ["1852940"]
     # data = get_data(emp)
     # for dat in data:
